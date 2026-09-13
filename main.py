@@ -1,6 +1,6 @@
 #main program
 import csv
-adminP="TP091031"
+import login
 fieldnames=["names","idnum","pass"]
 def inLogon(process):
     with open("data/employees.csv", "r") as employees:
@@ -20,11 +20,13 @@ def inLogon(process):
                 write = csv.DictWriter(employees,fieldnames=fieldnames)
                 write.writerow({"names":newEmployeeName,"idnum":newEmployeeId,"pass":newEmployeePass})
 
-inLogon("showall")
 
-inLogon("append")
 
-inLogon("showall")
+print(f"=========ShineOnWheels========="
+      f"Welcome to Shine On Wheels!"
+      f"Login as a customer or employee.\n")
+
+
 
 
 
