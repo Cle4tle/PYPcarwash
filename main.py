@@ -2,7 +2,7 @@
 import csv
 import login
 import menu
-fieldnames=["names","idnum","pass"]
+fieldnames=["names","idnum","pass","perms"]
 
 
 print(f"=========ShineOnWheels========="
