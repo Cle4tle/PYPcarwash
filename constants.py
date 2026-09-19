@@ -1,4 +1,4 @@
-CUSTOMERS_file = "data/customer.csv"
+CUSTOMERS_file = "data/customers.csv"
 BOOKING_file = "data/bookings.csv"
 SERVICES_file = "data/services.csv"
 MAINTENANCE_file = "data/maintenance.csv"
