@@ -1,9 +1,12 @@
 #login.py
+from constants import CREDENTIALS
+
+
 adminP="TP091031"
 userMode=""
 
 def login(ident,passkey):
-    with open("data/credentials.csv") as credentials:
+    with open(CREDENTIALS_file) as credentials:
         authbase = [row for row in csv.DictReader(credentials)]
     if ident == "admin" and passkey == adminP:
         userMode = "Administrator"

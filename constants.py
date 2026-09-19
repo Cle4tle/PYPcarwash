@@ -1,0 +1,6 @@
+CUSTOMERS_file = "data/customer.csv"
+BOOKING_file = "data/bookings.csv"
+SERVICES_file = "data/services.csv"
+MAINTENANCE_file = "data/maintenance.csv"
+PAYMENTS_file = "data/payments.csv"
+CREDENTIALS_file = "data/credentials.csv"

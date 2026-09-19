@@ -1,7 +1,7 @@
 #menu system
-
+from constants import CREDENTIALS_file
 def inLogon(process):
-    with open("data/credentials.csv", "r") as employees:
+    with open(CREDENTIALS_file, "r") as employees:
         credentials = csv.DictReader(employees)
         #print(credentials)
         if process.lower() == "s": #showall
@@ -14,7 +14,7 @@ def inLogon(process):
             newEmployeeId = f"SW{(4-len(str(lastId+1)))*"0"}{lastId+1}"
             print("The ID of the new employee is: ",newEmployeeId)
             newEmployeePass = input("Set a password: ")
-            with open("data/credentials.csv","a") as employees:
+            with open(CREDENTIALS_file,"a") as employees:
                 write = csv.DictWriter(employees,fieldnames=fieldnames)
                 write.writerow({"names":newEmployeeName,"idnum":newEmployeeId,"pass":newEmployeePass,"perms":employee})
                 return(print(f"New entry for {newEmployeeName} added"))
