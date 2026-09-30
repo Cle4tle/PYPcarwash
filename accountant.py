@@ -3,36 +3,21 @@
 import os
 from datetime import datetime
 
+from constants import SERVICES_file, CUSTOMERS_file, BOOKING_file, PAYMENTS_file
 
-# CONSTANTS
+field_separator = ","
+tax_rate = 0.06
+id_length = 4
 
-SERVICES_file= "services.csv"
-CUSTOMERS_file = "customers.csv"
-BOOKINGS_file = "bookings.csv"
-PAYMENTS_file = "payments.csv"
+payment_methods = ["CASH","Card","Online Transfer", "E-Wallet"]
+late_fee = 10.00
+not_showing_fee= 20.00
 
-FIELD_SEPARATOR = ","
-TAX_RATE = 0.06
-ID_LENGTH = 4  # All IDs are 4-digit numbers, e.g. 0001, 0002
+field_name1 = ["sv_id","sv_name","sv_price","sv_duration"]
+field_name2 = ["cu_id","cu_name","cu_phone","cu_email","cu_password"]
+field_name3 = ["bk_id","bk_customer_id","bk_service_id","bk_date","bk_time","bk_status"]
+field_name4 = ["pm_id","pm_booking_id","pm_amount","pm_date","pm_status"]
 
-PAYMENT_METHODS = ["CASH","Card","Online Transfer", "E-Wallet"]
-LATE_FEE = 10.00 # Added to the service price for late booking
-NOT_SHOWING_FEE = 20.00 # Added to the service price if the user not come even though he already booked
-
-# File format reference (comma-separated, one record per line):
-# services.csv   -> service_id,name,price,duration_minutes
-# customers.csv  -> customer_id,name,phone,email,password
-# bookings.csv   -> booking_id,customer_id,service_id,date,time,status
-# payments.csv   -> payment_id,booking_id,amount,date,status
-
-SV_ID, SV_NAME, SV_PRICE, SV_DURATION = range(4)           #Field positions and headers for services.csv
-CU_ID, CU_NAME, CU_PHONE, CU_EMAIL, CU_PASSWORD = range(5) #Field positions and headers for customers.csv
-BK_ID, BK_CUSTOMER_ID, BK_SERVICE_ID, BK_DATE, BK_TIME, BK_STATUS = range(6) #Field positions and headers for booking.csv
-PM_ID, PM_BOOKING_ID, PM_AMOUNT, PM_DATE, PM_STATUS = range(5) #Field positions and headers for payments.csv
-
-#----------------------------------
-#Generic File Helper
-#----------------------------------
 def check_file (filename):
     """Create an empty file if it does not already exist."""
 
@@ -40,7 +25,7 @@ def check_file (filename):
         try:
             open(filename, "w").close()
         except OSError as error:
-            print(f"[ERROR] Could not create file '{filename}': {error}")
+            print(f"Sorry!Could not create file '{filename}': {error}")
 
 def read_records (filename):
     """Read a comma-delimited .csv file and return a list of records."""
@@ -53,10 +38,10 @@ def read_records (filename):
                 line = line.strip()
                 if line == "":
                     continue
-                fields = line.split(FIELD_SEPARATOR)
+                fields = line.split(field_separator)
                 records.append(fields)
     except OSError as error:
-        print(f"Error!Could not read file '{filename}': {error}")
+        print(f"Sorry! Could not read file '{filename}': {error}")
     return records
 
 def write_records (filename, records):
@@ -64,20 +49,20 @@ def write_records (filename, records):
     try:
         with open(filename, "w") as file:
             for record in records:
-                file.write(FIELD_SEPARATOR.join(str(field) for field in record) + "\n")
+                file.write(field_separator.join(str(field) for field in record) + "\n")
         return True
     except OSError as error:
-        print(f"Error!Could not write to file '{filename}': {error}")
+        print(f"Sorry! Could not write to file '{filename}': {error}")
         return False
 
 def append_records (filename, record):
     """Add one new record to the end of the file without touching the rest."""
     try:
         with open(filename, "a") as file:
-            file.write(FIELD_SEPARATOR.join(str(field) for field in record) + "\n")
+            file.write(field_separator.join(str(field) for field in record) + "\n")
         return True
     except OSError as error:
-        print(f"[ERROR] Could not write to file '{filename}': {error}")
+        print(f"Sorry! Could not write to file '{filename}': {error}")
         return False
 
 def id_generator (records, id_index, prefix, width=4):
@@ -95,11 +80,11 @@ def id_generator (records, id_index, prefix, width=4):
 def formatting_id(number):
     """Returns a string of the number padded with leading zeros to 4 digits."""
 
-    return str(number).zfill(ID_LENGTH)
-#-------------------------------------
+    return str(number).zfill(id_length)
+
 #Input Validation
-#-------------------------------------
-def noemptyinput(prompt):
+
+def no_empty_input(prompt):
     """the user must type something rather than leaving a blank space."""
 
     while True:
@@ -157,30 +142,30 @@ def find (records, id_index, target_id):
 def customer_name (customer_id, customers):
     """Look up a customer's name from their ID, for display in reports which returns as customer name or unknown customer if the customer ID doesn't exist."""
 
-    customer = find_record_by_id(customers, CU_ID, customer_id)
-    return customer[CU_NAME] if customer else "Unknown Customer"
+    customer = find(customers, field_name1[0], customer_id)
+    return customer[field_name2[2]] if customer else "Unknown Customer"
 
 def service_name(service_id, services):
     """Look up a service's name from its ID, for display in reports."""
 
-    service = find_record_by_id(services, SV_ID, service_id)
-    return service[SV_NAME] if service else "Unknown Service"
+    service = find(services, field_name1[0], service_id)
+    return service[field_name1[1]] if service else "Unknown Service"
 
 def service_price(service_id, services):
     """Look up a service's price from its ID."""
 
-    service = find_record_by_id(services, SV_ID, service_id)
-    return float(service[SV_PRICE]) if service else 0.0
+    service = find(services, field_name1[0], service_id)
+    return float(service[field_name1[3]]) if service else 0.0
 
 def due_amount(booking, services):
     """Calculate the total amount a customer owes for one booking if a customer is either not shown or late."""
 
-    base_amount = get_service_price(booking[BK_SERVICE_ID], services)
-    status = booking[BK_STATUS]
-    if status == "No-Show":
-        return round(base_amount + NOT_SHOWING_FEE, 2)
+    base_amount = get_service_price(booking[field_name3[2]], services)
+    status = booking[field_name3[5]]
+    if status == "Not Showing":
+        return round(base_amount + not_showing_fee, 2)
     if status == "Late":
-        return round(base_amount + LATE_FEE, 2)
+        return round(base_amount + late_fee, 2)
     return round(base_amount, 2)
 
 def total_paid_for_booking (booking_id, payments):
@@ -188,17 +173,17 @@ def total_paid_for_booking (booking_id, payments):
 
     total_paid = 0.0
     for payment in payments:
-        if payment[PM_BOOKING_ID] == booking_id:
-            total_paid += float(payment[PM_AMOUNT])
+        if payment[field_name4[0]] == booking_id:
+            total_paid += float(payment[field_name4[2]])
     return round(total_paid, 2)
 
 def customer_name_for_booking(booking_id, bookings, customers):
     """Look up the name of the customer who made a given booking."""
 
-    booking = find (bookings, BK_ID, booking_id)
+    booking = find (bookings, field_name3[0], booking_id)
     if booking is None:
         return "Unknown Customer"
-    return customer_name(booking[BK_CUSTOMER_ID], customers)
+    return customer_name(booking[field_name3[2]], customers)
 
 
 #Record Payment
@@ -207,7 +192,7 @@ def record_payment():
     """record a new payment from the booking"""
 
     print("\n--- RECORD A NEW PAYMENT ---")
-    bookings = read_records(BOOKINGS_file)
+    bookings = read_records(BOOKING_file)
     payments = read_records(PAYMENTS_file)
     customers = read_records(CUSTOMERS_file)
     services = read_records(SERVICES_file)
@@ -216,14 +201,14 @@ def record_payment():
         print("No booking is found. Kindly ask Booking Officer to create a booking first.")
         return
 
-    booking_id = noemptyinput("Enter Booking ID (e.g. B0001): ").upper()
-    booking = find (bookings, BK_ID, booking_id)
+    booking_id = no_empty_input("Enter Booking ID (e.g. B0001): ").upper()
+    booking = find (bookings, field_name3[0], booking_id)
 
     if booking is None:
         print(f"Booking '{booking_id}' was not found. Please check the Booking ID and try again.")
         return
 
-    if booking[BK_STATUS] == "Cancelled":
+    if booking[field_name3[5]] == "Cancelled":
         print("This booking was cancelled. No payment can be recorded against it.")
         return
 
@@ -231,9 +216,9 @@ def record_payment():
     paid = total_paid_for_booking(booking_id, payments)
     balance = round(amount_due - paid, 2)
 
-    customer_name1 = customer_name(booking[BK_CUSTOMER_ID], customers)
-    service_name2 = service_name(booking[BK_SERVICE_ID], services)
-    print(f"Customer      : {customer_name1} ({booking[BK_CUSTOMER_ID]})")
+    customer_name1 = customer_name(booking[field_name3[1]], customers)
+    service_name2 = service_name(booking[field_name3[2]], services)
+    print(f"Customer      : {customer_name1} ({booking[field_name3[1]]})")
     print(f"Service       : {service_name2}")
     print(f"Booking Status: {booking[BK_STATUS]}")
     print(f"Amount Due    : RM {amount_due:.2f}")
@@ -253,10 +238,10 @@ def record_payment():
     total_paid1 = round(paid + amount, 2)
     status = "Paid" if total_paid1 >= amount_due else "Partial"
 
-    payment_id = id_generator(payments, PM_ID, "PAY")
+    payment_id = id_generator(payments, field_name4[2], "PAY")
     new_payment = [payment_id, booking_id, f"{amount}", date_str, status]
 
-    if append_record(PAYMENTS_FILE, new_payment):
+    if append_record(PAYMENTS_file, new_payment):
         print(f"\n[OK] Payment '{payment_id}' recorded successfully. Status: {status}")
     else:
         print("Failed to save payment. Please try again.")
@@ -273,15 +258,15 @@ def update_payment():
         print("Sorry!No payments found to update.")
         return
 
-    payment_id = noemptyinput("Enter Payment ID to update (e.g. PAY0001): ").upper()
-    payment = find(payments, PM_ID, payment_id)
+    payment_id = no_empty_input("Enter Payment ID to update (e.g. PAY0001): ").upper()
+    payment = find(payments, field_name4[0], payment_id)
 
     if payment is None:
         print(f"Payment '{payment_id}' was not found.")
         return
 
-    print(f"Current record -> Amount: RM {float(payment[PM_AMOUNT]):.2f}, "
-          f"Date: {payment[PM_DATE]}, Status: {payment[PM_STATUS]}")
+    print(f"Current record -> Amount: RM {float(payment[field_name4]):.2f}, "
+          f"Date: {payment[field_name4[3]]}, Status: {payment[field_name4[4]]}")
 
     print("\nPlease select the choice that u would like to update")
     print("1. Amount")
@@ -294,10 +279,10 @@ def update_payment():
         return
     elif choice == "1":
         new_amount = amount_validation("Enter new amount: RM ")
-        payment[PM_AMOUNT] = f"{new_amount:.2f}"
+        payment[field_name4[2]] = f"{new_amount:.2f}"
     elif choice == "2":
         new_status = choice_validation("New status (Paid/Partial/Unpaid): ", ["Paid", "Partial", "Unpaid"])
-        payment[PM_STATUS] = new_status
+        payment[field_name4[4]] = new_status
 
     if write_records(PAYMENTS_file, payments):
         print(f"Payment '{payment_id}' updated successfully.")
@@ -311,7 +296,7 @@ def view_payments():
 
     print("\n--- ALL PAYMENT RECORDS ---")
     payments = read_records(PAYMENTS_file)
-    bookings = read_records(BOOKINGS_file)
+    bookings = read_records(BOOKING_file)
     customers = read_records(CUSTOMERS_file)
     services = read_records(SERVICES_file)
 
@@ -324,12 +309,12 @@ def view_payments():
     print(header)
     print("-" * len(header))
     for payment in payments:
-        booking = find(bookings, BK_ID, payment[PM_BOOKING_ID])
-        customer_name3 = customer_name(booking[BK_CUSTOMER_ID], customers) if booking else "Unknown Customer"
-        service_name4 = service_name(booking[BK_SERVICE_ID], services) if booking else "Unknown Service"
-        amount = float(payment[PM_AMOUNT])
-        print(f"{payment[PM_ID]:<12}{payment[PM_BOOKING_ID]:<12}{customer_name3:<18}"
-              f"{service_name4:<22}{amount:>10.2f}  {payment[PM_DATE]:<12}{payment[PM_STATUS]:<10}")
+        booking = find(bookings, field_name3[0], payment[field_name4[1]])
+        customer_name3 = customer_name(booking[field_name3[1]], customers) if booking else "Unknown Customer"
+        service_name4 = service_name(booking[field_name1[0]], services) if booking else "Unknown Service"
+        amount = float(payment[field_name4[2]])
+        print(f"{payment[field_name4[0]]:<12}{payment[field_name4[1]]:<12}{customer_name3:<18}"
+              f"{service_name4:<22}{amount:>10.2f}  {payment[field_name4[3]]:<12}{payment[field_name4[4]]:<10}")
     print("-" * len(header))
     print(f"Total records: {len(payments)}")
 
@@ -340,7 +325,7 @@ def income_summary():
 
     print("\n--- INCOME SUMMARY ---")
     payments = read_records(PAYMENTS_file)
-    bookings = read_records(BOOKINGS_file)
+    bookings = read_records(BOOKING_file)
     services = read_records(SERVICES_file)
 
     if not payments:
@@ -351,17 +336,15 @@ def income_summary():
     income_by_service = {}
 
     for payment in payments:
-        amount = float(payment[PM_AMOUNT])
+        amount = float(payment[field_name4[2]])
         total_income += amount
 
-        booking = find(bookings, BK_ID, payment[PM_BOOKING_ID])
-        service_name5 = service_name(booking[BK_SERVICE_ID], services) if booking else "Unknown Service"
+        booking = find(bookings, field_name3[0], payment[field_name4[1]])
+        service_name5 = service_name(booking[field_name3[2]], services) if booking else "Unknown Service"
         income_by_service[service_name5] = income_by_service.get(service_name, 0.0) + amount
         lines = [
-            "=" * 45,
-            "        SHINEONWHEELS - INCOME SUMMARY",
-            "=" * 45,
-            f"Report generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
+            "=" * 15 + "        SHINEONWHEELS - INCOME SUMMARY" + "=" * 45,
+            f"Report: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
             f"Total transactions: {len(payments)}",
             f"TOTAL INCOME: RM {total_income:.2f}",
             "",
@@ -381,7 +364,7 @@ def outstanding_payment_list():
     """generate a list of every booking that still has money owing."""
 
     print("\n--- OUTSTANDING PAYMENT LIST ---")
-    bookings = read_records(BOOKINGS_file)
+    bookings = read_records(BOOKING_file)
     payments = read_records(PAYMENTS_file)
     customers = read_records(CUSTOMERS_file)
     services = read_records(SERVICES_file)
@@ -394,15 +377,15 @@ def outstanding_payment_list():
     total_outstanding = 0.0
 
     for booking in bookings:
-        if booking[BK_STATUS] == "Cancelled":
+        if booking[field_name3[5]] == "Cancelled":
             continue
 
         amount_due = due_amount(booking, services)
-        paid = total_paid_for_booking(booking[BK_ID], payments)
+        paid = total_paid_for_booking(booking[field_name3[0]], payments)
         balance = round(amount_due - paid, 2)
         if balance > 0:
-            customer_name6 = customer_name(booking[BK_CUSTOMER_ID], customers)
-            outstanding_list.append((booking[BK_ID], customer_name6, booking[BK_DATE], amount_due, paid, balance))
+            customer_name6 = customer_name(booking[field_name3[1]], customers)
+            outstanding_list.append((booking[field_name3[0]], customer_name6, booking[field_name3[4]], amount_due, paid, balance))
             total_outstanding += balance
 
     if not outstanding_list:
@@ -410,10 +393,8 @@ def outstanding_payment_list():
         return
 
     lines = [
-        "=" * 65,
-        "        SHINEONWHEELS - OUTSTANDING PAYMENT LIST",
-        "=" * 65,
-        f"Report generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
+        "=" * 15 + "        SHINEONWHEELS - OUTSTANDING PAYMENT LIST" + "=" * 65,
+        f"Report: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
         f"{'Booking ID':<12}{'Customer':<20}{'Date':<12}{'Due':>8}{'Paid':>8}{'Balance':>10}",
         "-" * 65,
     ]
@@ -436,53 +417,49 @@ def monthly_financial_summary():
     target_month = month_validation("Enter month to summarise (YYYY-MM): ")
 
     payments = read_records(PAYMENTS_file)
-    bookings = read_records(BOOKINGS_file)
+    bookings = read_records(BOOKING_file)
     services = read_records(SERVICES_file)
 
     month_income = 0.0
     month_transactions = 0
     for payment in payments:
-        if payment[PM_DATE].startswith(target_month):
-            month_income += float(payment[PM_AMOUNT])
+        if payment[field_name4[3]].startswith(target_month):
+            month_income += float(payment[field_name4[2]])
             month_transactions += 1
     month_outstanding = 0.0
     month_bookings_count = 0
     for booking in bookings:
-        if booking[BK_DATE].startswith(target_month) and booking[BK_STATUS] != "Cancelled":
+        if booking[field_name3[3]].startswith(target_month) and booking[field_name3[5]] != "Cancelled":
             month_bookings_count += 1
             amount_due8 = due_amount(booking, services)
-            paid = total_paid_for_booking(booking[BK_ID], payments)
+            paid = total_paid_for_booking(booking[field_name3[0]], payments)
             balance = round(amount_due8 - paid, 2)
             if balance > 0:
                 month_outstanding += balance
 
     lines = [
-        "=" * 45,
-        f"   MONTHLY FINANCIAL SUMMARY - {target_month}",
-        "=" * 45,
+        "=" * 15 + f"   MONTHLY FINANCIAL SUMMARY for {target_month}" + "=" * 15,
         f"Report generated : {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
         f"Bookings in month: {month_bookings_count}",
         f"Payments received: {month_transactions}",
         f"Income collected : RM {month_income:.2f}",
         f"Outstanding      : RM {month_outstanding:.2f}",
         f"Net position     : RM {month_income - month_outstanding:.2f}",
-        "=" * 45,
+        "=" * 15,
     ]
 
     report_text = "\n".join(lines)
     print("\n" + report_text)
 
-#---------------------------
+
 #   Accountant Menu
-#---------------------------
+
 
 def accountant_menu():
     """Show the Accountant role's menu in a loop until the user exits."""
 
     while True:
-        print("\n" + "=" * 45)
-        print("           ACCOUNTANT MENU")
-        print("=" * 45)
+        print("=" * 15 + "ACCOUNTANT MENU" +"=" * 15)
         print("1. Record a New Payment")
         print("2. Update an Existing Payment")
         print("3. View All Payments")
