@@ -18,11 +18,11 @@ def register_customer(name, _id):
     customer_info.append(_id + "," + name + "\n")
     save_entries(CUSTOMERS_file,customer_info)
 
-def book_by_id(_id, date,time, priority):
+def book_by_id(_id, date,time):
     """adds a booking specified by the id of a customer and date to the booking.txt file
     , and adds priority to distinguish booking at the same date"""
     book_info = load_entries(BOOKING_file)
-    book_info.append(_id + "," + date + "," + time + "," + priority + "\n")
+    book_info.append(_id + "," + date + "," + time + "\n")
     save_entries(BOOKING_file, book_info)
 
 def cancel_booking(_id, date, time):
@@ -43,13 +43,24 @@ def reschedule_booking(_id, prev_date, prev_time, new_date, new_time):
     for entry in book_info:
 
         curr_id = entry.split(",")[0]
-        curr_date = entry.split(",")[1]
-        curr_time = entry.split(",")[2]
-        priority = entry.split(",")[3]
 
-        if curr_date == prev_date and curr_id == _id and curr_time == prev_time:
-            new_entry = _id + "," + new_date + "," + new_time + "," + priority
+        curr_date = entry.split(",")[1]
+
+        curr_time = entry.split(",")[2]
+
+        if curr_date == prev_date and curr_id == _id and curr_time == prev_time + "\n":
+            new_entry = _id + "," + new_date + "," + new_time
             book_info[book_info.index(entry)] = new_entry
             break
     save_entries(BOOKING_file, book_info)
 
+def view_booking_by_id(_id):
+    """display the current bookings of the customer by id"""
+    book_info = load_entries(BOOKING_file)
+    for entry in book_info:
+        if entry.split(",")[0] == _id:
+            print("Current bookings :-> ")
+            print("Date : " + entry.split(",")[1] + " At " + entry.split(",")[2])
+#book_by_id("0001", "4/12/2026", "4:30PM")
+#cancel_booking("0001", "3/12/2026","4PM")
+#view_booking_by_id("0001")
