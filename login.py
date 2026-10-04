@@ -18,4 +18,10 @@ def login(ident,passkey):
                     userMode = "employee"
                 elif rows["perms"] == "customer":
                     userMode = "customer"
+        return(userMode)
 
+def logprompt():
+    print("===Enter your login details===")
+    logname = input("Name: ")
+    logpass = input("Password: ")
+    return(login(logname,logpass))
