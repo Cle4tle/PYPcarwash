@@ -25,7 +25,7 @@ def read_file(file_name):
         print("Cannot open", file_name)
     return data
 
-# save the payments list into payments.txt
+# save the payments list into payments.csv
 def save_payments(payments):
     file = open(PAYMENTS_file, "w")
     for p in payments:
