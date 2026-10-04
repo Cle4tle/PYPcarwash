@@ -3,11 +3,12 @@
 # 2. Income summary and outstanding payment list
 # 3. Monthly financial summary
 
+from constants import PAYMENTS_file, BOOKING_file, SERVICES_file
 TAX_RATE = 0.06
 
-# payments.txt : payment_id,booking_id,amount_due,amount_paid,method,date,status
-# bookings.txt : booking_id,customer_id,service_id,date,time,status
-# services.txt : service_id,service_name,price
+# payments.csv : payment_id,booking_id,amount_due,amount_paid,method,date,status
+# bookings.csv : booking_id,customer_id,service_id,date,time,status
+# services.csv : service_id,service_name,price
 
 
 # read a file into a list
@@ -47,9 +48,9 @@ def ask_amount():
 
 # 1. record payment
 def record_payment():
-    bookings = read_file("bookings.txt")
-    services = read_file("services.txt")
-    payments = read_file("payments.txt")
+    bookings = read_file(BOOKING_file)
+    services = read_file(SERVICES_file)
+    payments = read_file(PAYMENTS_file)
 
     booking_id = input("Enter booking ID: ")
 
@@ -107,7 +108,7 @@ def record_payment():
 
 # 2. update payment
 def update_payment():
-    payments = read_file("payments.txt")
+    payments = read_file(PAYMENTS_file)
     payment_id = input("Enter payment ID: ")
 
     for p in payments:
@@ -142,7 +143,7 @@ def update_payment():
 
 # 3. view all payments
 def view_payments():
-    payments = read_file("payments.txt")
+    payments = read_file(PAYMENTS_file)
     print("\nID, Booking, Due, Paid, Method, Date, Status")
     for p in payments:
         print(p[0], p[1], p[2], p[3], p[4], p[5], p[6])
@@ -150,7 +151,7 @@ def view_payments():
 
 # 4. income summary
 def income_summary():
-    payments = read_file("payments.txt")
+    payments = read_file(PAYMENTS_file)
     total_due = 0
     total_paid = 0
 
@@ -166,7 +167,7 @@ def income_summary():
 
 # 5. outstanding payments
 def outstanding_list():
-    payments = read_file("payments.txt")
+    payments = read_file(PAYMENTS_file)
     print("\n--- Outstanding Payments ---")
     count = 0
 
@@ -182,7 +183,7 @@ def outstanding_list():
 
 # 6. monthly summary
 def monthly_summary():
-    payments = read_file("payments.txt")
+    payments = read_file(PAYMENTS_file)
     month = input("Enter month (YYYY-MM): ")
     total = 0
     count = 0
