@@ -1,6 +1,6 @@
 service_id,service_name,price,C4
 S001,Basic Wash,25,30
 S002,Interior Vacuum & Exterior Wash,35,45
-SOO3,Interior Deep Clean,60,90
+S003,Interior Deep Clean,60,90
 S004,Full Service Detail,100,150
 S005,VIP Detail,150,200
