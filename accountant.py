@@ -27,7 +27,7 @@ def read_file(file_name):
 
 # save the payments list into payments.txt
 def save_payments(payments):
-    file = open("payments.txt", "w")
+    file = open(PAYMENTS_file, "w")
     for p in payments:
         file.write(p[0] + "," + p[1] + "," + p[2] + "," + p[3] + "," +
                    p[4] + "," + p[5] + "," + p[6] + "\n")
