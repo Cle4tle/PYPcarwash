@@ -1,3 +1,4 @@
+import random as rnd
 from constants import CUSTOMERS_file, BOOKING_file
 
 def load_entries(file_entries):
@@ -12,44 +13,76 @@ def save_entries(file_entries, new_entries):
         for entry in new_entries:
             f.write(entry)
 
-def register_customer(name, _id):
+def register_customer(name, email, phone_number):
     """adds a customer to the customers.txt file"""
     customer_info = load_entries(CUSTOMERS_file)
-    customer_info.append(_id + "," + name + "\n")
-    save_entries(CUSTOMERS_file,customer_info)
+    acc_exists = False
+    for customer in customer_info:
+        if customer.split(",")[0] == email:
+            acc_exists = True
+            break
 
-def book_by_id(_id, date,time, priority):
-    """adds a booking specified by the id of a customer and date to the booking.txt file
-    , and adds priority to distinguish booking at the same date"""
+    if acc_exists:
+        return False
+    else:
+        customer_info.append(email + "," + name + "," + phone_number + "\n")
+        save_entries(CUSTOMERS_file, customer_info)
+        return True
+def book_(email,serv_id, date,time):
+    """adds a booking specified and generates an id for the booking and date to the booking.csv file"""
+    b_id = str(rnd.randint(1,9999))
+    status = "valid"
     book_info = load_entries(BOOKING_file)
-    book_info.append(_id + "," + date + "," + time + "," + priority + "\n")
+    book_info.append(b_id + ","+ serv_id + "," +  email + "," + date + "," + time + "," + status + "\n") # field names style was adapted from https://wash2u.my/
     save_entries(BOOKING_file, book_info)
 
-def cancel_booking(_id, date, time):
-    """cancels a booking by the id and date"""
+def verify_booking(email):
+    '''counts the number of bookings'''
+    book_info = load_entries(BOOKING_file)
+    bookings_count = 0
+    if len(book_info) == 0:
+        return True
+
+    for entry in book_info:
+        if entry.split(",")[2] == email:
+            bookings_count += 1
+    if bookings_count > 5:
+        return False
+    else :
+        return True
+def cancel_booking(b_id):
+    """cancels a booking by the id"""
     book_info = load_entries(BOOKING_file)
     for entry in book_info:
+
         curr_id = entry.split(",")[0]
-        curr_date = entry.split(",")[1]
-        curr_time = entry.split(",")[2]
-        if curr_date == date and curr_id == _id and curr_time == time:
-            book_info.remove(entry)
+        print(entry)
+        if curr_id == b_id:
+            status = "Cancelled"
+            new_entry = b_id + "," + entry.split(",")[1] + "," + entry.split(",")[2] + "," +  entry.split(",")[3] + "," + entry.split(",")[4]  + "," + status + "\n"
+            book_info[book_info.index(entry)] = new_entry
             break
+
     save_entries(BOOKING_file, book_info)
 
-def reschedule_booking(_id, prev_date, prev_time, new_date, new_time):
+def reschedule_booking(b_id,new_date, new_time):
     """updates (change date and time) booking specified by the id, date and time"""
     book_info = load_entries(BOOKING_file)
     for entry in book_info:
 
         curr_id = entry.split(",")[0]
-        curr_date = entry.split(",")[1]
-        curr_time = entry.split(",")[2]
-        priority = entry.split(",")[3]
 
-        if curr_date == prev_date and curr_id == _id and curr_time == prev_time:
-            new_entry = _id + "," + new_date + "," + new_time + "," + priority
+        if  curr_id == b_id :
+            new_entry = b_id + "," + entry.split(",")[1] + "," + entry.split(",")[2] + "," + new_date + "," + new_time  + "," +entry.split(",")[5]
             book_info[book_info.index(entry)] = new_entry
             break
     save_entries(BOOKING_file, book_info)
+
+def view_booking_by_id(email):
+    """display the current bookings of the customer by id"""
+    book_info = load_entries(BOOKING_file)
+    for entry in book_info:
+        if entry.split(",")[2] == email:
+            print("Current bookings :-> ")
+            print("ID : " + entry.split(",")[0] + " Date : " + entry.split(",")[3] + " At " + entry.split(",")[4], "Status : " + entry.split(",")[5])
 
