@@ -16,6 +16,7 @@ def read_file(file_name):
     data = []
     try:
         file = open(file_name, "r")
+        file.readline() #to skip reading the header lines of the .csv files
         for line in file:
             line = line.strip()
             if line != "":
@@ -28,6 +29,7 @@ def read_file(file_name):
 # save the payments list into payments.csv
 def save_payments(payments):
     file = open(PAYMENTS_file, "w")
+    file.write("payment_id,booking_id,amount_due,amount_paid,method,date,status\n")
     for p in payments:
         file.write(p[0] + "," + p[1] + "," + p[2] + "," + p[3] + "," +
                    p[4] + "," + p[5] + "," + p[6] + "\n")
@@ -52,7 +54,8 @@ def record_payment():
     services = read_file(SERVICES_file)
     payments = read_file(PAYMENTS_file)
 
-    booking_id = input("Enter booking ID: ")
+    booking_id = input("Enter booking ID: ").strip()
+
 
     # check the booking
     found = False
@@ -72,39 +75,40 @@ def record_payment():
     # check if already paid
     for p in payments:
         if p[1] == booking_id:
-            print("This booking already has a payment.")
+            print("This booking already has a payment (" + p[0] + "). Use Update payment instead.")
             return
 
-        # find the price of the service
-        price = 0
-        for s in services:
-            if s[0] == service_id:
-                price = float(s[2])
+    # find the price of the service
+    price = 0
+    for s in services:
+        if s[0] == service_id:
+            price = float(s[2])
 
-        tax = price * TAX_RATE
-        due = round(price + tax, 2)
-        print("Price: RM", price)
-        print("Tax  : RM", round(tax, 2))
-        print("Total: RM", due)
+    tax = price * TAX_RATE
+    due = round(price + tax, 2)
+    print("Price: RM", price)
+    print("Tax  : RM", round(tax, 2))
+    print("Total: RM", due)
 
-        paid = ask_amount()
-        if paid > due:
-            paid = due
+    paid = ask_amount()
+    if paid > due:
+        paid = due
 
-        method = input("Payment method (Cash/Card/E-Wallet): ")
-        date = input("Payment date (YYYY-MM-DD): ")
+    method = input("Payment method (Cash/Card/E-Wallet): ").capitalize()
+    date = input("Payment date (YYYY-MM-DD): ")
 
-        if paid == due:
-            status = "Paid"
-        elif paid > 0:
-            status = "Partial"
-        else:
-            status = "Unpaid"
+    if paid == due:
+        status = "Paid"
+    elif paid > 0:
+        status = "Partial"
+    else:
+        status = "Unpaid"
 
-        payment_id = "P" + str(len(payments) + 1)
-        payments.append([payment_id, booking_id, str(due), str(paid), method, date, status])
-        save_payments(payments)
-        print("Payment", payment_id, "saved. Status:", status)
+    payment_id = "P" + str(len(payments) + 1)     #to add on +1 of payment_id. Eg. P3 comes after P2 is given to the relevent booking_id
+
+    payments.append([payment_id, booking_id, str(due), str(paid), method, date, status])
+    save_payments(payments)
+    print("Payment", payment_id, "saved. Status:", status)
 
 # 2. update payment
 def update_payment():
@@ -118,6 +122,10 @@ def update_payment():
             print("Total due  : RM", due)
             print("Already paid: RM", paid)
             print("Balance     : RM", round(due - paid, 2))
+
+            if paid >= due:
+                print("This payment has already paid in full")
+                return
 
             extra = ask_amount()
             paid = paid + extra
@@ -144,10 +152,14 @@ def update_payment():
 # 3. view all payments
 def view_payments():
     payments = read_file(PAYMENTS_file)
-    print("\nID, Booking, Due, Paid, Method, Date, Status")
-    for p in payments:
-        print(p[0], p[1], p[2], p[3], p[4], p[5], p[6])
+    print()
+    print("ID".ljust(5) + "Booking".ljust(9) + "Due".ljust(9) + "Paid".ljust(9)
+          + "Method".ljust(10) + "Date".ljust(12) + "Status")
+    print("-" * 60)
 
+    for p in payments:
+        print(p[0].ljust(5) + p[1].ljust(9) + p[2].ljust(9) + p[3].ljust(9)
+              + p[4].ljust(10) + p[5].ljust(12) + p[6])
 
 # 4. income summary
 def income_summary():
