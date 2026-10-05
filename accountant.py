@@ -16,7 +16,7 @@ def read_file(file_name):
     data = []
     try:
         file = open(file_name, "r")
-        file.readline() #to skip reading the header lines of the .csv files
+        file.readline()  # to skip reading the header lines of the .csv files
         for line in file:
             line = line.strip()
             if line != "":
@@ -27,6 +27,8 @@ def read_file(file_name):
     return data
 
 # save the payments list into payments.csv
+
+
 def save_payments(payments):
     file = open(PAYMENTS_file, "w")
     file.write("payment_id,booking_id,amount_due,amount_paid,method,date,status\n")
@@ -49,13 +51,14 @@ def ask_amount():
             print("Please enter a number only.")
 
 # 1. record payment
+
+
 def record_payment():
     bookings = read_file(BOOKING_file)
     services = read_file(SERVICES_file)
     payments = read_file(PAYMENTS_file)
 
     booking_id = input("Enter booking ID: ").strip()
-
 
     # check the booking
     found = False
@@ -75,7 +78,8 @@ def record_payment():
     # check if already paid
     for p in payments:
         if p[1] == booking_id:
-            print("This booking already has a payment (" + p[0] + "). Use Update payment instead.")
+            print("This booking already has a payment (" +
+                  p[0] + "). Use Update payment instead.")
             return
 
     # find the price of the service
@@ -104,13 +108,17 @@ def record_payment():
     else:
         status = "Unpaid"
 
-    payment_id = "P" + str(len(payments) + 1)     #to add on +1 of payment_id. Eg. P3 comes after P2 is given to the relevent booking_id
+    # to add on +1 of payment_id. Eg. P3 comes after P2 is given to the relevent booking_id
+    payment_id = "P" + str(len(payments) + 1)
 
-    payments.append([payment_id, booking_id, str(due), str(paid), method, date, status])
+    payments.append([payment_id, booking_id, str(due),
+                    str(paid), method, date, status])
     save_payments(payments)
     print("Payment", payment_id, "saved. Status:", status)
 
 # 2. update payment
+
+
 def update_payment():
     payments = read_file(PAYMENTS_file)
     payment_id = input("Enter payment ID: ")
@@ -150,6 +158,8 @@ def update_payment():
     print("Payment not found.")
 
 # 3. view all payments
+
+
 def view_payments():
     payments = read_file(PAYMENTS_file)
     print()
@@ -162,6 +172,8 @@ def view_payments():
               + p[4].ljust(10) + p[5].ljust(12) + p[6])
 
 # 4. income summary
+
+
 def income_summary():
     payments = read_file(PAYMENTS_file)
     total_due = 0
@@ -178,6 +190,8 @@ def income_summary():
     print("Still owed    : RM", round(total_due - total_paid, 2))
 
 # 5. outstanding payments
+
+
 def outstanding_list():
     payments = read_file(PAYMENTS_file)
     print("\n--- Outstanding Payments ---")
@@ -211,6 +225,8 @@ def monthly_summary():
     print("Total received    : RM", round(total, 2))
 
 # accountant menu
+
+
 def accountant_menu():
     while True:
         print("\n===== ACCOUNTANT MENU =====")
@@ -240,6 +256,7 @@ def accountant_menu():
             break
         else:
             print("Invalid choice.")
+
 
 if __name__ == "__main__":
     accountant_menu()
