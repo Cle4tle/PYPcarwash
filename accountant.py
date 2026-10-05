@@ -241,5 +241,5 @@ def accountant_menu():
         else:
             print("Invalid choice.")
 
-
-accountant_menu()
+if __name__ == "__main__":
+    accountant_menu()

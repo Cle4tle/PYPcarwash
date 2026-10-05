@@ -3,6 +3,8 @@ import csv
 import login
 import menu
 import officer_roles as officer
+import accountant
+
 fieldnames=["names","idnum","pass","perms"]
 services_names_list = []# [TODO] : fill this with our services
 services_ids = [1,2,3,4, 5]# [TODO] if these aren't the correct services ids correct them
@@ -122,10 +124,20 @@ def main():
                              sub_menu_booking_process()
                         elif choice == "0":
                              break
+
           elif choice == "2":
-                    ''' [TODO] : everyone who's in charge of something related to employee handle this '''
-          else:
-              return False
+                while True:
+                    print("-----Employee-----")
+                    print("1. Accountant")
+                    # Add roles related to employee here
+                    print("0. return")
+                    emp_choice = input("Enter your choice: ")
+                    if emp_choice == "1":
+                        accountant.accountant_menu()
+                    elif emp_choice == "0":
+                        break  #  back to main menu
+          elif choice == "0":
+            return False
 
 if __name__ == "__main__":
        isrunning = True
