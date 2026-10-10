@@ -1,13 +1,16 @@
 #main program
-import csv
-import login
+import accountant
+import input_validation as inp_v
 import menu
 import officer_roles as officer
-import accountant
+import csv
+from constants import CREDENTIALS_file
 
+adminP="TP091031"
+userMode= None
 fieldnames=["names","idnum","pass","perms"]
 services_names_list = []# [TODO] : fill this with our services
-services_ids = [1,2,3,4, 5]# [TODO] if these aren't the correct services ids correct them
+services_ids = [1,2,3,4,5]# [TODO] if these aren't the correct services ids correct them
 
 '''NOTE : if any one of you guys have their own sub_menu u can place it in its proper place
       REPEAT [proper place]'''
@@ -20,26 +23,22 @@ services_ids = [1,2,3,4, 5]# [TODO] if these aren't the correct services ids cor
 '''TIP : just run the program to understand it'''
 def sub_menu_customer():
       print("1.Register")
-      print("2.log in")
       print("0.return")
-      index = input("choose a number: ") # [TODO] : replace input() with a proper validate function
-      if index == "1":
+      index = inp_v.get_menu_choice_from_user(0,1)
+      if index == 1:
             print("-----Register-----")
-            name = input("name: ")  # [TODO] : replace input() with a proper validate function
-            email = input("Email: ")  # [TODO] : replace input() with a proper validate function
-            phone = input("Phone Number: ")  # [TODO] : replace input() with a proper validate function
+            name = inp_v.get_non_empty_text_from_user("name: ")
+            email = inp_v.get_non_empty_text_from_user("Email: ")  # [TODO] : replace input() with a proper validate function
+            phone = inp_v.get_phone_number_from_user("Phone Number: ")
             res = officer.register_customer(name, email, phone)
             if not res:
                 print("account already exists Try Logging In")
                 return "rep"
             else:
                 return True
-      elif index == "2":
-            print("-----Log In-----")
-            #[TODO]: the Log in logic flow i still didnt understand so whoever did it handle this
-            return True
-      elif index == "0":
+      elif index == 0:
             return False
+
 def sub_menu_customer_services():
 
             '''[TODO] : print all of our services in this format :
@@ -57,8 +56,8 @@ def sub_menu_customer_services():
                  return False
             else:
                 email = input("Email: ")# [TODO] : replace input() with a proper validate function
-                date = input("Date (YY/MM/DD): ")# [TODO] : replace input() with a proper validate function
-                time = input("Time (HH:MM): ")# [TODO] : replace input() with a proper validate function
+                date = inp_v.get_valid_date_from_user("Date YYYY-MM-DD: ")
+                time = inp_v.get_valid_time_from_user("Time HH:MM: ")
                 choice = input("Confirm Booking to this email ? (Y/N): ")# [TODO] : replace input() with a proper validate function
                 if choice == "Y":
                     if not officer.verify_booking(email):
@@ -74,37 +73,48 @@ def sub_menu_booking_process():
     eml = input("Email: ")  # [TODO] : replace input() with a proper validate function
     while True:
         officer.view_booking_by_id(eml)
-        #[TODO] : right now the above function only displays the bookings without the pyament paid or any details
-         # whoever un charge of this please include those details without missing up the logic
-
         id_ = input("Enter the Booking ID from above to perform operation: ")# [TODO] : replace input() with a proper validate function
-        op = input("choose operation (C) cancel, (R) reschedule, (Q) to quit: ").strip().upper()# [TODO] : replace input() with a proper validate function
+        op = inp_v.get_spcific_text_from_user("choose operation (C) cancel, (R) reschedule, (Q) to quit: ")# [TODO] : replace input() with a proper validate function
 
-        if op == "C":
+        if op == "c":
             officer.cancel_booking(id_)
             print("canceled successfully")
-        elif op == "R":
-            date = input("Enter the date (YY/MM/DD): ")# [TODO] : replace input() with a proper validate function
-            time = input("Enter the time (HH:MM): ")# [TODO] : replace input() with a proper validate function
+        elif op == "r":
+            date = inp_v.get_valid_date_from_user("Enter the date (YY/MM/DD): ")
+            time = inp_v.get_valid_time_from_user("Enter the time (HH:MM): ")
             officer.reschedule_booking(id_, date, time)
-
-        elif op == "Q":
+        elif op == "q":
             break
+
+def login(ident,passkey):
+    userMode = None
+    with open(CREDENTIALS_file) as credentials:
+        authbase = [row for row in csv.DictReader(credentials)]
+    if ident == "admin" and passkey == adminP:
+        userMode = "Administrator"
+        return userMode
+    else:
+        for rows in authbase:
+            if ident == rows["names"] and passkey == rows["pass"]:
+                userMode = rows["perms"]
+                break
+        return userMode
+
 def main_menu():
 
-    print(f"=========ShineOnWheels========="
-          f"\nWelcome to Shine On Wheels!"
-          f"\nLogin as a customer or employee.\n")
-    print("1. Customer")
-    print("2. employee")
+    print("=========ShineOnWheels=========",
+          "\nWelcome to Shine On Wheels!",
+          "\nRegister as a customer or log into an existing account")
+    print("1. Register")
+    print("2. Login")
     print("0. exit")
-    choice = input("Enter your choice: ")  # [TODO] : replace input() with a proper validate function
+    choice = inp_v.get_menu_choice_from_user(0,2)
     return choice
 
 def main():
       while True:
           choice = main_menu()
-          if choice == "1":
+          if choice == 1:
                 while True:
                   running = sub_menu_customer()
                   if running == "rep":
@@ -125,18 +135,21 @@ def main():
                         elif choice == "0":
                              break
 
-          elif choice == "2":
+          elif choice == 2:
                 while True:
                     print("-----Employee-----")
                     print("1. Accountant")
+                    print("2. Packages and schedules")
                     # Add roles related to employee here
                     print("0. return")
-                    emp_choice = input("Enter your choice: ")
-                    if emp_choice == "1":
+                    emp_choice = inp_v.get_menu_choice_from_user(0,2)
+                    if emp_choice == 1:
                         accountant.accountant_menu()
-                    elif emp_choice == "0":
+                    elif emp_choice == 2:
+                        foobar()
+                    elif emp_choice == 0:
                         break  #  back to main menu
-          elif choice == "0":
+          elif choice == 0:
             return False
 
 if __name__ == "__main__":
