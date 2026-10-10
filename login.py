@@ -1,10 +1,12 @@
 #login.py
+#deprecated module, login functionality has been moved to main.py
+#changes no longer tracked in this file, please refer to main.py for login functionality
 import csv
 
 from constants import CREDENTIALS_file
 
 adminP="TP091031"
-userMode=""
+userMode= None
 
 def login(ident,passkey):
     userMode = None
@@ -20,7 +22,7 @@ def login(ident,passkey):
                 break
         return userMode
 
-def logprompt():
+def logPrompt():
     print("===Enter your login details===")
     logname = input("Name: ")
     logpass = input("Password: ")
