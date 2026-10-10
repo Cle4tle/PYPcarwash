@@ -1,3 +1,6 @@
+from constants import CUSTOMERS_file, SERVICES_file
+
+
 def get_menu_choice_from_user(min_num, max_num):
     """Keeps asking until the user gives a valid whole number in range."""
     while True:
@@ -33,7 +36,7 @@ def get_valid_date_from_user(prompt_message):
         print("Please enter a valid date in YYYY-MM-DD format (e.g. 2026-09-20).")
 
 
-def get_valid_time_from_user(prompt_message):
+def get_valid_time_from_user(prompt_message, error_message="Please enter a valid time in 24-hour format (HH:MM). Our operating hours are from 10:00 to 20:00."):
     """Expects format HH:MM (24-hour), e.g. 14:30."""
     while True:
         value = input(prompt_message).strip()
@@ -42,4 +45,54 @@ def get_valid_time_from_user(prompt_message):
             hour, minute = int(parts[0]), int(parts[1])
             if (0 <= hour <= 23) and (0 <= minute <= 59):
                 return value
-        print("Please enter a valid time in HH:MM 24-hour format (e.g. 14:30). Our operating hours are from 10:00 to 20:00.")
+        print(error_message)
+
+
+def read_file(filename):
+    """Reads every line of a file into a list of strings (no newlines)."""
+    lines = []
+    try:
+        with open(filename, "r") as file:
+            next(file)  # Skip the header line
+            for line in file:
+                cleaned_line = line.strip()
+                if cleaned_line != "":
+                    lines.append(cleaned_line)
+    except FileNotFoundError:
+        print(f"Notice: {filename} not found. Treating it as empty.")
+    except IOError:
+        print(f"Error!!! Could not read {filename}.")
+    return lines
+
+
+def append_line(filename, line_text):
+    """Adds one new line to the end of a file."""
+    try:
+        with open(filename, "a") as file:
+            file.write(line_text + "\n")
+        return True
+    except IOError:
+        print(f"Error!!! Could not write to {filename}.")
+        return False
+
+# Check if a customer ID exists in the customers.csv file
+
+
+def customer_id_exists(customer_id_to_check):
+    """Returns True if the given customer_id is found in customers.csv."""
+    for line in read_file(CUSTOMERS_file):
+        fields = line.split(",")
+        if fields[0] == customer_id_to_check:
+            return True
+    return False
+
+# Check if a service ID exists in the services.csv file
+
+
+def service_exists(service_id_to_check):
+    """Returns True if the given service_id is found in services.csv."""
+    for line in read_file(SERVICES_file):
+        fields = line.split(",")
+        if fields[0] == service_id_to_check:
+            return True
+    return False
