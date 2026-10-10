@@ -35,6 +35,7 @@ def book_(email,serv_id, date,time):
     book_info = load_entries(BOOKING_file)
     book_info.append(b_id + ","+ serv_id + "," +  email + "," + date + "," + time + "," + status + "\n") # field names style was adapted from https://wash2u.my/
     save_entries(BOOKING_file, book_info)
+    return b_id
 
 def verify_booking(email):
     '''counts the number of bookings'''
