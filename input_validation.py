@@ -17,6 +17,7 @@ def get_non_empty_text_from_user(prompt_message):
         if value != "":
             return value
         print("This field cannot be empty. Please try again.")
+
 def get_valid_date_from_user(prompt_message):
     """Expects format YYYY-MM-DD, e.g. 2026-09-20."""
     while True:
@@ -41,11 +42,11 @@ def get_phone_number_from_user(prompt_message):
     '''keeps asking until the user types a valid phone number.'''
     while True:
         try:
-            number = input(prompt_message)
-            if len(number) != 10:
+            number = input(prompt_message).strip().replace(" ", "")
+            if len(number) != 11:
                 print("Please enter a valid phone number.")
             else:
-                return int(number)
+                return number
         except ValueError:
             print("Please enter a valid phone number.")
 def get_spcific_text_from_user(prompt_message):
@@ -62,3 +63,41 @@ def get_spcific_text_from_user(prompt_message):
         else:
            return value
            break
+def get_valid_email_from_user(prompt_message):
+    """Expects format E-Mail."""
+    while True:
+           value = input(prompt_message).strip().split("@")
+
+           dig_count = 0
+           char_count = 0
+           for i in range(len(value[0])):
+               if value[0][i].isdigit():
+                   dig_count += 1
+               elif value[0][i].isalpha():
+                   char_count += 1
+               else:
+                   print("invalid!, please enter a valid email address.")
+                   continue
+           if 15 >= len(value[0]) >= 5 >= dig_count >= 0 and 6 <= char_count <= 15:
+               email = value[0]+"@" + value[1]
+               return email# means valid
+           else:
+               if not 5 >= dig_count >= 0:
+                    print("invalid!, too many digits.")
+               elif len(value[0]) > 13:
+                   print("invalid!, too long.")
+               elif len(value[0]) < 5:
+                   print("invalid!,  too short.")
+               elif char_count > 15:
+                   print("invalid!, too many characters.")
+               continue
+           verify_gmail = s[1].split(".")
+
+           if verify_gmail[0] == "gmail" and verify_gmail[1] == "com":
+               email = value[0] + value[1]
+               return email  # means valid
+           else:
+               print("invalid!, please enter a valid email address.")
+
+
+
