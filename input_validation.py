@@ -45,7 +45,6 @@ def get_valid_time_from_user(prompt_message, error_message="Please enter a valid
             hour, minute = int(parts[0]), int(parts[1])
             if (0 <= hour <= 23) and (0 <= minute <= 59):
                 return value
-<<<<<<< HEAD
         print(error_message)
 
 
@@ -97,30 +96,3 @@ def service_exists(service_id_to_check):
         if fields[0] == service_id_to_check:
             return True
     return False
-=======
-        print("Please enter a valid time in HH:MM 24-hour format (e.g. 14:30). Our operating hours are from 10:00 to 20:00.")
-def get_phone_number_from_user(prompt_message):
-
-    while True:
-        try:
-            number = input(prompt_message)
-            if len(number) != 10:
-                print("Please enter a valid phone number.")
-            else:
-                return int(number)
-        except ValueError:
-            print("Please enter a valid phone number.")
-
-def get_spcific_text_from_user(prompt_message):
-    """Keeps asking until the user types a letter that is wanted"""
-    while True:
-        value = input(prompt_message).strip().lower()
-        if len(value) != 1:
-            print("Please enter a single letter.")
-            continue
-        if value != "c" or value != "r" or value != "q":
-            if value == "":
-                print("This field cannot be empty. Please try again.")
-            print("Please enter one of the specified Letters.")
-        return value
->>>>>>> 8a24ecb2518e9a9191fd10e653603831b05cc285
