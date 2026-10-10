@@ -1,5 +1,2 @@
-booking_id,customer_id,service_id,date,time,status
-8185,1,what@gmail.com,23/06/07,5:30PM,Cancelled
-B001,C001,S001,2026-09-05,10:00AM,Completed
-B002,C002,S002,2026-09-10,3:00PM,Completed
-B003,C003,S001,2026-10-04,5:00PM,Completed
+booking_id,customer_email,service_id,date,time,status
+8185,what@gmail.com,S001,23/06/07,5:30PM,Cancelled

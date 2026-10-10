@@ -1,4 +1,6 @@
 payment_id,booking_id,amount_due,amount_paid,method,date,status
 P1,B001,26.5,26.5,E-Wallet,2026-10-06,Paid
 P2,B002,37.1,37.1,Card,2026-10-05,Paid
-P3,B003,26.5,20.0,Card,2026-10-8,Partial
+P3,B003,26.5,26.5,Card,2026-10-09,Paid
+P4,B004,63.6,30.0,E-Wallet,2026-10-09,Partial
+P5,B005,106.0,86.0,Cash,2026-10-12,Partial
