@@ -7,7 +7,7 @@ import accountant
 import input_validation as inp_v
 fieldnames=["names","idnum","pass","perms"]
 services_names_list = []# [TODO] : fill this with our services
-services_ids = [1,2,3,4,5]# [TODO] if these aren't the correct services ids correct them
+services_ids = ["S001", "S002","S003", "S004","S005"]# [TODO] if these aren't the correct services ids correct them
 
 '''NOTE : if any one of you guys have their own sub_menu u can place it in its proper place
       REPEAT [proper place]'''

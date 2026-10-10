@@ -29,7 +29,7 @@ def register_customer(name, email, phone_number):
         save_entries(CUSTOMERS_file, customer_info)
         return True
 def book_(email,serv_id, date,time):
-    """adds a booking specified and generates an id for the booking and date to the booking.csv file"""
+    """adds a booking and generates an id for the booking.csv file"""
     b_id = str(rnd.randint(1,9999))
     status = "valid"
     book_info = load_entries(BOOKING_file)

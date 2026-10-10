@@ -74,7 +74,6 @@ def record_payment():
     if booking_status == "Cancelled":
         print("This booking is cancelled.")
         return
- # the above code is not needed
     # check if already paid
     for p in payments:
         if p[1] == booking_id:
