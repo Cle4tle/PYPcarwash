@@ -1,10 +1,13 @@
 #main program
-import csv
-import login
-import menu
-import officer_roles as officer
 import accountant
 import input_validation as inp_v
+import menu
+import officer_roles as officer
+import csv
+from constants import CREDENTIALS_file
+
+adminP="TP091031"
+userMode= None
 fieldnames=["names","idnum","pass","perms"]
 services_names_list = []# [TODO] : fill this with our services
 services_ids = ["S001", "S002","S003", "S004","S005"]# [TODO] if these aren't the correct services ids correct them
@@ -20,13 +23,12 @@ services_ids = ["S001", "S002","S003", "S004","S005"]# [TODO] if these aren't th
 '''TIP : just run the program to understand it'''
 def sub_menu_customer():
       print("1.Register")
-      print("2.log in")
       print("0.return")
-      index = inp_v.get_menu_choice_from_user(0,2)
+      index = inp_v.get_menu_choice_from_user(0,1)
       if index == 1:
             print("-----Register-----")
-            name = input("name: ")
-            email = input("Email: ")  # [TODO] : replace input() with a proper validate function
+            name = inp_v.get_non_empty_text_from_user("name: ")
+            email = inp_v.get_non_empty_text_from_user("Email: ")  # [TODO] : replace input() with a proper validate function
             phone = inp_v.get_phone_number_from_user("Phone Number: ")
             res = officer.register_customer(name, email, phone)
             if not res:
@@ -34,12 +36,9 @@ def sub_menu_customer():
                 return "rep"
             else:
                 return True
-      elif index == 2:
-            print("-----Log In-----")
-            #[TODO]: the Log in logic flow i still didnt understand so whoever did it handle this
-            return True
       elif index == 0:
             return False
+
 def sub_menu_customer_services():
 
             '''[TODO] : print all of our services in this format :
@@ -86,13 +85,28 @@ def sub_menu_booking_process():
             officer.reschedule_booking(id_, date, time)
         elif op == "q":
             break
+
+def login(ident,passkey):
+    userMode = None
+    with open(CREDENTIALS_file) as credentials:
+        authbase = [row for row in csv.DictReader(credentials)]
+    if ident == "admin" and passkey == adminP:
+        userMode = "Administrator"
+        return userMode
+    else:
+        for rows in authbase:
+            if ident == rows["names"] and passkey == rows["pass"]:
+                userMode = rows["perms"]
+                break
+        return userMode
+
 def main_menu():
 
-    print(f"=========ShineOnWheels========="
-          f"\nWelcome to Shine On Wheels!"
-          f"\nLogin as a customer or employee.\n")
-    print("1. Customer")
-    print("2. employee")
+    print("=========ShineOnWheels=========",
+          "\nWelcome to Shine On Wheels!",
+          "\nRegister as a customer or log into an existing account")
+    print("1. Register")
+    print("2. Login")
     print("0. exit")
     choice = inp_v.get_menu_choice_from_user(0,2)
     return choice
@@ -125,11 +139,14 @@ def main():
                 while True:
                     print("-----Employee-----")
                     print("1. Accountant")
+                    print("2. Packages and schedules")
                     # Add roles related to employee here
                     print("0. return")
-                    emp_choice = inp_v.get_menu_choice_from_user(0,1)
+                    emp_choice = inp_v.get_menu_choice_from_user(0,2)
                     if emp_choice == 1:
                         accountant.accountant_menu()
+                    elif emp_choice == 2:
+                        foobar()
                     elif emp_choice == 0:
                         break  #  back to main menu
           elif choice == 0:
