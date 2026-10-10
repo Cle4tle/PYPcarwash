@@ -1,3 +1,2 @@
-booking_id,customer_id,service_id,date,time,status
-8185,what@gmail.com,1,23/06/07,5:30PM,Cancelled
-5138,qihijoksalf@gmail.com,S001,2026-12-01,9:00AM,Cancelled
+booking_id,customer_email,service_id,date,time,status
+8185,what@gmail.com,S001,23/06/07,5:30PM,Cancelled
