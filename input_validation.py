@@ -61,14 +61,14 @@ def get_phone_number_from_user(prompt_message):
             print("Please enter a valid phone number.")
 
 
-def get_spcific_text_from_user(prompt_message):
+def get_Y_or_N_from_user(prompt_message):
     """Keeps asking until the user types a letter that is wanted"""
     while True:
         value = input(prompt_message).strip().lower()
         if len(value) != 1:
             print("Please enter a single letter.")
             continue
-        if value != "c" or value != "r" or value != "q":
+        if value != "y" or value != "n":
             if value == "":
                 print("This field cannot be empty. Please try again.")
             print("Please enter one of the specified Letters.")

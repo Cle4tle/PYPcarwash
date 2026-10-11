@@ -1,8 +1,12 @@
+'''This Module will have all the functions required for the officer roles'''
+import random as rnd
 import random as rnd
 from constants import CUSTOMERS_file, BOOKING_file, REQUESTED_BOOKING_file, REQUESTED_EXTENSION_file
 import input_validation as iv
+
 def load_entries(file_entries):
-    """Reads every line of the current file state and returns the content as a list"""
+    """Reads every line of the current file state,
+     and returns the content as a list"""
     with open(file_entries, "r") as f:
         entries = f.readlines()
         return entries
@@ -10,7 +14,9 @@ def load_entries(file_entries):
 def save_entries(file_entries, new_entries):
     """saves every line of the new entries and writes it back into the file"""
     with open(file_entries, "w") as f:
+
         for entry in new_entries:
+
             f.write(entry)
 
 def register_customer(name, email, phone_number):
@@ -36,17 +42,16 @@ def book_(email):
     serv_id = ""
     date = ""
     time = ""
-    requested_booking_info = load_entries(REQUESTED_BOOKING_file)# cus_email,serv_id, date, time
+    requested_booking_info = load_entries(REQUESTED_BOOKING_file)  # cus_email,serv_id, date, time
     book_info = load_entries(BOOKING_file)
     verified = verify_booking(email)
     for entry in requested_booking_info:
-         field = entry.split(",")
-         if field[0] == email:
-             serv_id += field[1]
-             date += field[2]
-             time += field[3].strip(" ")
-             print(time)
-             requested_booking_info.remove(entry)
+        field = entry.split(",")
+        if field[0] == email:
+            serv_id += field[1]
+            date += field[2]
+            time += field[3].strip(" ")
+            requested_booking_info.remove(entry)
 
 
     if verified:
@@ -82,8 +87,9 @@ def cancel_booking(b_id):
             status = "Cancelled"
             new_entry = b_id + "," + entry.split(",")[1] + "," + entry.split(",")[2] + "," +  entry.split(",")[3] + "," + entry.split(",")[4]  + "," + status + "\n"
             book_info[book_info.index(entry)] = new_entry
+            print("cancelled Succesfully")
             break
-    print("cancelled Succesfully")
+
     save_entries(BOOKING_file, book_info)
 
 def reschedule_booking(eml,b_id):
@@ -115,7 +121,7 @@ def view_bookings():
         choice = iv.get_menu_choice_from_user(1, 2)
 
         if choice == 1:
-            print(f"All Current Bookings :-> ")
+            print("All Current Bookings :-> ")
             for entry in book_info:
                     print("ID : " + entry.split(",")[1] + "Booking ID: " + entry.split(",")[0] + " Date : " + entry.split(",")[3] + " At " + entry.split(",")[4], "Status : " + entry.split(",")[5])
         elif choice == 2:
@@ -124,7 +130,7 @@ def view_bookings():
             for entry in book_info:
                 if entry.split(",")[1] == email:
                     print("ID : " + email + "Booking ID: " + entry.split(",")[0] +  " Date : " + entry.split(",")[3] + " At " + entry.split(",")[4], "Status : " + entry.split(",")[5])
-        dis = iv.get_non_empty_text_from_user("Cancel Booking (Y/N) ?").lower()
+        dis = iv.get_Y_or_N_from_user("Cancel Booking (Y/N) ?")
         if dis == "y":
             cancel_id = iv.get_non_empty_text_from_user(" Enter the Booking ID: ")
             cancel_booking(cancel_id)
@@ -136,14 +142,15 @@ def view_bookings():
             print("Please enter a valid choice")
 
 def view_requested_bookings():
+    '''display the requested bookings for the REQUESTED_BOOKING_file'''
     requested_booking_info= load_entries(REQUESTED_BOOKING_file)
     if len(requested_booking_info) == 0:
         print("No requests available")
         return False
     print("Email  " + "Service ID   " + "Date    " + "Time")
     for entry in requested_booking_info:
-         field = entry.split(",")
-         print(field[0] + "  " + field[1] + "  " + field[2] + "  " + field[3])
+        field = entry.split(",")
+        print(field[0] + "  " + field[1] + "  " + field[2] + "  " + field[3])
 
 def view_requested_extensions():
     requested_ex_info= load_entries(REQUESTED_EXTENSION_file)
@@ -152,8 +159,8 @@ def view_requested_extensions():
         return False
     print("Email  " + "Booking ID   " + "requested time")
     for entry in requested_ex_info:
-         field = entry.split(",")
-         print(field[0] + "  " + field[1] + "  " + field[2])
+        field = entry.split(",")
+        print(field[0] + "  " + field[1] + "  " + field[2])
 
 
 
@@ -178,6 +185,7 @@ def sub_menu_customer():
             break
 
 def sub_menu_bookings_process():
+    '''Sub Menu for all the Booking Processes'''
     while True:
         print("1. View Requested Bookings")
         print("2. View Requested Extensions")
@@ -193,12 +201,12 @@ def sub_menu_bookings_process():
             if not res:
                 print("Booking failed!, this customer has too many bookings!")
         elif choice == 2:
-             res = view_requested_extensions()
-             if not res:
-                 continue
-             eml = iv.get_valid_email_from_user("Enter the Email to approve request:  ")
-             booking_id = iv.get_non_empty_text_from_user("Booking ID: ")
-             reschedule_booking(eml, booking_id)
+            res = view_requested_extensions()
+            if not res:
+                continue
+            eml = iv.get_valid_email_from_user("Enter the Email to approve request:  ")
+            booking_id = iv.get_non_empty_text_from_user("Booking ID: ")
+            reschedule_booking(eml, booking_id)
         elif choice == 3:
             view_bookings()
         else:
@@ -217,4 +225,3 @@ def officer_menu():
             sub_menu_bookings_process()
         elif choice == 0:
             break
-
