@@ -13,18 +13,17 @@ services_names_list = []# [TODO] : fill this with our services
 services_ids = ["S001", "S002","S003", "S004","S005"]# [TODO] if these aren't the correct services ids correct them
 
 def login(ident,passkey):
-    userMode = None
+    global userMode
     with open(CREDENTIALS_file) as credentials:
-        authbase = [row for row in csv.DictReader(credentials)]
+        authBase = [row for row in csv.DictReader(credentials)]
     if ident == "admin" and passkey == adminP:
         userMode = "Administrator"
         return userMode
-    else:
-        for rows in authbase:
-            if ident == rows["names"] and passkey == rows["pass"]:
-                userMode = rows["perms"]
-                break
-        return userMode
+    for rows in authBase:
+        if ident == rows["names"] and passkey == rows["pass"]:
+            userMode = rows["perms"]
+            break
+    return userMode
 
 def main_menu():
 
@@ -45,22 +44,18 @@ def main():
 
           elif choice == 2:
                 while True:
-                    print("-----Employee-----")
-                    print("1. Accountant")
-                    print("2. Packages and schedules")
-                    print("3. Booking Officer")
+                    print("-----Enter your login details-----")
+                    logName = input("Name: ")
+                    logPass = input("Password: ")
+                    logged_in_as = login(logName,logPass)
                     # Add roles related to employee here
-                    print("0. return")
-                    emp_choice = inp_v.get_menu_choice_from_user(0,2)
-                    if emp_choice == 1:
-                        accountant.accountant_menu()
-                    elif emp_choice == 2:
+                    if logged_in_as == "Administrator":
                         foobar()
-                    elif emp_choice == 3:
-                        officer.officer_menu()
-                        
-                    elif emp_choice == 0:
-                        break  #  back to main menu
+                    elif logged_in_as == "employee":
+                        foobar()
+                    elif logged_in_as == "customer":
+                        foobar()
+
           elif choice == 0:
             return False
 
